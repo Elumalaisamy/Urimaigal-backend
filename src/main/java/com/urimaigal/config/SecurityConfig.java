@@ -76,16 +76,17 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         
-        // 3. Clean up origins (removes accidental spaces from property string)
-        List<String> origins = Arrays.stream(allowedOrigins.split(","))
-                                     .map(String::trim)
-                                     .collect(Collectors.toList());
+        // Use OriginPattern to handle the Vercel URL more reliably
+        config.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "https://urimaigal-front-end.vercel.app",
+            "https://urimaigal-final-frontend-h8lt.vercel.app"
+        ));
         
-        config.setAllowedOrigins(origins);
+        // Allow ALL methods and ALL headers to rule out a missing "Content-Type" or "Authorization" header
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        
-        // 4. Specify common headers for JWT and JSON communication
-        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
+        config.setAllowedHeaders(Arrays.asList("*")); 
         
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
